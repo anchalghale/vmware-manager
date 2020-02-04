@@ -1,6 +1,7 @@
 '''Main script'''
 import os
 import threading
+import shutil
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
@@ -29,13 +30,9 @@ class Application:
         self.root.title('VMware Manager')
         self.builder = Builder(builder)
         self.logger = TkinterLogger(builder)
+        self.mother_vm = None
 
-        self.attributes = load_state('~/vmware-manager-state')
-
-        if self.attributes:
-            self.update_gui()
-        else:
-            self.set_attributes()
+        self.set_attributes(load_state('~/vmware-manager-state'))
 
     def update_gui(self):
         '''Updates the gui components'''
@@ -46,45 +43,65 @@ class Application:
         self.builder.set_entry('guest_username', self.attributes.guest_username)
         self.builder.set_entry('guest_password', self.attributes.guest_password)
 
-    def set_attributes(self):
+    def set_attributes(self, state=None):
         '''Sets the attributes for batch processing'''
-        attributes = []
-        attributes.append(askopenfilename(title='Select mother VM', filetypes=['Vmx *.vmx']))
-        attributes.append(askdirectory(title='Select output directory for VMs'))
-        attributes.append(askinteger('Enter an integer', 'Starting VM'))
-        attributes.append(askinteger('Enter an integer', 'Ending VM'))
-        attributes.append(askstring('Enter a string', 'Guest Username'))
-        attributes.append(askstring('Enter a string', 'Guest Password'))
-
-        self.attributes = Attributes(*attributes)
-        save_state('~/vmware-manager-state', self.attributes)
+        if not state:
+            attributes = []
+            attributes.append(askopenfilename(title='Select mother VM', filetypes=['Vmx *.vmx']))
+            attributes.append(askdirectory(title='Select output directory for VMs'))
+            attributes.append(askinteger('Enter an integer', 'Starting VM'))
+            attributes.append(askinteger('Enter an integer', 'Ending VM'))
+            attributes.append(askstring('Enter a string', 'Guest Username'))
+            attributes.append(askstring('Enter a string', 'Guest Password'))
+            self.attributes = Attributes(*attributes)
+            save_state('~/vmware-manager-state', self.attributes)
+        else:
+            self.attributes = state
+        self.mother_vm = Vmrun(vmx=self.attributes.mother_vm,
+                               user=self.attributes.guest_username,
+                               password=self.attributes.guest_password,
+                               debug=True,
+                               vmrun=VMRUN)
         self.update_gui()
 
     def clean_vms(self):
         '''Cleans all the vms in a folder'''
-        self.logger.log('Cleaning VMs...')
-        os.removedirs(self.attributes.output_dir)
+        def task():
+            self.builder.disable_all(self.root)
+            self.logger.log('Cleaning VMs...')
+            if os.path.exists(self.attributes.output_dir):
+                shutil.rmtree(self.attributes.output_dir)
+            self.builder.enable_all(self.root)
+        threading.Thread(target=task, daemon=True).start()
 
     def clone_vms(self):
         '''Clones all the vms in a folder'''
-        self.logger.log('Cloning VMs...')
+        def task():
+            self.builder.disable_all(self.root)
+            self.logger.log('Cleaning VMs...')
+            for i in range(self.attributes.starting_vm, self.attributes.ending_vm+1):
+                vmx = os.path.join(self.attributes.output_dir, f'worker{i}/worker{i}.vmx')
+                if os.path.exists(vmx):
+                    self.logger.log(f'VM {os.path.basename(vmx)} already exists. Skipping...')
+                    continue
+                self.logger.log(f'Cloning {os.path.basename(vmx)}..., mode=linked')
+                output = self.mother_vm.clone(f'"{vmx}"', 'linked', f'-cloneName=worker{i}')
+                if output != []:
+                    self.logger.log(f'Error while cloning: {" ".join(output)}')
+            self.builder.enable_all(self.root)
+        threading.Thread(target=task, daemon=True).start()
 
     def stop_vm(self, vmx, mode='soft'):
         '''Stops a vm'''
         self.logger.log(f'Stopping {os.path.basename(vmx)}..., mode={mode}')
-        virutal_machine = Vmrun(vmx=self.attributes.mother_vm,
-                                user=self.attributes.guest_username,
-                                password=self.attributes.guest_password,
-                                debug=True,
-                                vmrun=VMRUN)
-        virutal_machine.stop(mode)
+        self.mother_vm.stop(mode)
 
     def stop_vms(self, mode='soft'):
         '''Stops all the vms'''
         def task():
+            self.builder.disable_all(self.root)
             self.stop_vm(self.attributes.mother_vm, mode)
             self.builder.enable_all(self.root)
-        self.builder.disable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
 
     def stop_vms_soft(self):
