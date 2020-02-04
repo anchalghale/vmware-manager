@@ -260,7 +260,7 @@
             </child>
             <child>
               <object class="tk.Button" id="Set output dir">
-                <property name="command">set_mother_dir</property>
+                <property name="command">set_output_dir</property>
                 <property name="text" translatable="yes">Browse</property>
                 <layout>
                   <property name="column">1</property>

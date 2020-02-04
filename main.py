@@ -5,7 +5,6 @@ import shutil
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
-from tkinter.simpledialog import askinteger, askstring
 from tkinter.messagebox import showerror
 
 import pygubu
@@ -55,24 +54,31 @@ class Application:
         obj = {field: self.builder.get_variable(field) for field in Attributes._fields}
         return Attributes(**obj)
 
-    # def set_mother_vm(self):
+    def set_mother_vm(self):
+        '''Sets the mother_vm attribute'''
+        mother_vm = os.path.realpath(askopenfilename(
+            title='Select mother VM', filetypes=['Vmx *.vmx']))
+        self.builder.set_variable('mother_vm', mother_vm)
 
-    def set_attributes(self, state=None):
+    def set_output_dir(self):
+        '''Sets the output_dir attribute'''
+        output_dir = os.path.realpath(askdirectory(title='Select output directory for VMs'))
+        self.builder.set_variable('output_dir', output_dir)
+
+    def set_attributes(self, attributes=None):
         '''Sets the attributes for batch processing'''
-        if not state:
-            attributes = []
-            attributes.append(askopenfilename(title='Select mother VM', filetypes=['Vmx *.vmx']))
-            attributes.append(askdirectory(title='Select output directory for VMs'))
-            attributes.append(askinteger('Enter an integer', 'Starting VM'))
-            attributes.append(askinteger('Enter an integer', 'Ending VM'))
-            attributes.append(askstring('Enter a string', 'Guest Username'))
-            attributes.append(askstring('Enter a string', 'Guest Password'))
-            attributes = Attributes(*attributes)
+        if not attributes:
+            self.builder.set_variable('starting_vm', 1)
+            self.builder.set_variable('ending_vm', 10)
+            self.builder.set_variable('guest_username', 'John')
+            self.builder.set_variable('guest_password', '1234')
+            self.set_mother_vm()
+            self.set_output_dir()
+            attributes = self.get_attributes()
             save_state('~/vmware-manager-state', attributes)
         else:
-            attributes = state
+            self.update_gui(attributes)
         self.mother_vm = self.get_vmx(attributes.mother_vm)
-        self.update_gui(attributes)
 
     def get_vmx(self, vmx_path):
         '''Returns an Vmrun objects using a vmx file path'''
