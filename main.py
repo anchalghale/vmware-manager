@@ -14,6 +14,7 @@ from builder import Builder
 from logger import TkinterLogger
 from namedtuples import Attributes
 from pickler import load_state, save_state
+from vmx import read_vmx, write_vmx
 
 VMRUN = 'C:/Program Files (x86)/VMware/VMware Workstation/vmrun.exe'
 
@@ -128,6 +129,14 @@ class Application:
                               f'Please consider closing all the VMs before setting the vars.')
                     self.builder.enable_all(self.root)
                     return
+            for i in range(attributes.starting_vm, attributes.ending_vm+1):
+                vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
+                vmx_path = os.path.realpath(vmx_path)
+                self.logger.log(f'Writing variables to {os.path.basename(vmx_path)}...')
+                vmx = read_vmx(vmx_path)
+                vmx['guestinfo.server'] = os.environ['COMPUTERNAME']
+                vmx['guestinfo.worker'] = i
+                write_vmx(vmx_path, vmx)
 
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
