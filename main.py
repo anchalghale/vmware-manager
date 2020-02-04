@@ -71,7 +71,7 @@ class Application:
 
     def stop_vm(self, vmx, mode='soft'):
         '''Stops a vm'''
-        self.logger.log(f'Stopping {vmx}..., mode={mode}')
+        self.logger.log(f'Stopping {os.path.basename(vmx)}..., mode={mode}')
         virutal_machine = Vmrun(vmx=self.attributes.mother_vm,
                                 user=self.attributes.guest_username,
                                 password=self.attributes.guest_password,
@@ -79,13 +79,21 @@ class Application:
                                 vmrun=VMRUN)
         virutal_machine.stop(mode)
 
-    def stop_vms_soft(self):
-        '''Clones all the vms in a folder'''
+    def stop_vms(self, mode='soft'):
+        '''Stops all the vms'''
         def task():
-            self.stop_vm(self.attributes.mother_vm)
+            self.stop_vm(self.attributes.mother_vm, mode)
             self.builder.enable_all(self.root)
         self.builder.disable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
+
+    def stop_vms_soft(self):
+        '''Stops all the vms mode=soft'''
+        self.stop_vms(mode='soft')
+
+    def stop_vms_hard(self):
+        '''Stops all the vms mode=hard'''
+        self.stop_vms(mode='hard')
 
 
 def main():
