@@ -1,23 +1,28 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface>
   <object class="tk.Frame" id="main_frame">
-    <property name="height">200</property>
-    <property name="width">200</property>
+    <property name="height">350</property>
+    <property name="width">900</property>
     <layout>
       <property name="column">0</property>
-      <property name="propagate">True</property>
+      <property name="propagate">False</property>
       <property name="row">0</property>
     </layout>
     <child>
       <object class="tk.LabelFrame" id="tasks">
-        <property name="height">200</property>
+        <property name="height">150</property>
         <property name="text" translatable="yes">Tasks</property>
-        <property name="width">700</property>
+        <property name="width">900</property>
         <layout>
           <property name="column">0</property>
           <property name="propagate">False</property>
           <property name="row">0</property>
           <property name="sticky">nw</property>
+          <columns>
+            <column id="0">
+              <property name="minsize">900</property>
+            </column>
+          </columns>
         </layout>
         <child>
           <object class="tk.Frame" id="buttons">
@@ -27,7 +32,7 @@
               <property name="column">0</property>
               <property name="propagate">True</property>
               <property name="row">0</property>
-              <property name="sticky">nw</property>
+              <property name="sticky">ew</property>
             </layout>
             <child>
               <object class="tk.Button" id="Stop VMs hard">
@@ -38,7 +43,7 @@
                   <property name="column">0</property>
                   <property name="propagate">False</property>
                   <property name="row">0</property>
-                  <property name="sticky">w</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -51,6 +56,7 @@
                   <property name="column">1</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -63,7 +69,7 @@
                   <property name="column">2</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property name="sticky">nw</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -76,7 +82,7 @@
                   <property name="column">3</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property name="sticky">nw</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -89,6 +95,7 @@
                   <property name="column">4</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -102,7 +109,7 @@
                   <property name="column">5</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property name="sticky">nw</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -116,7 +123,7 @@
                   <property name="column">6</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property name="sticky">nw</property>
+                  <property name="sticky">ew</property>
                 </layout>
               </object>
             </child>
@@ -130,7 +137,7 @@
               <property name="column">0</property>
               <property name="propagate">True</property>
               <property name="row">1</property>
-              <property name="sticky">nw</property>
+              <property name="sticky">ew</property>
             </layout>
             <child>
               <object class="tk.Label" id="Mother VM">
@@ -210,6 +217,44 @@
                 </layout>
               </object>
             </child>
+            <child>
+              <object class="tk.Label" id="Guest Username">
+                <property name="text" translatable="yes">Guest Username</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="guest_username">
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Label" id="Guest Password">
+                <property name="text" translatable="yes">Guest Password</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="guest_password">
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -219,9 +264,9 @@
             <layout>
               <property name="column">0</property>
               <property name="columnspan">3</property>
-              <property name="propagate">False</property>
+              <property name="propagate">True</property>
               <property name="row">2</property>
-              <property name="sticky">w</property>
+              <property name="sticky">ew</property>
             </layout>
           </object>
         </child>
@@ -231,13 +276,23 @@
       <object class="tk.LabelFrame" id="console_frame">
         <property name="height">200</property>
         <property name="text" translatable="yes">Console</property>
-        <property name="width">700</property>
+        <property name="width">900</property>
         <layout>
           <property name="column">0</property>
           <property name="columnspan">2</property>
           <property name="propagate">False</property>
           <property name="row">2</property>
           <property name="sticky">nw</property>
+          <rows>
+            <row id="0">
+              <property name="minsize">200</property>
+            </row>
+          </rows>
+          <columns>
+            <column id="0">
+              <property name="minsize">900</property>
+            </column>
+          </columns>
         </layout>
         <child>
           <object class="tk.Text" id="console">
@@ -248,6 +303,7 @@
               <property name="column">0</property>
               <property name="propagate">True</property>
               <property name="row">0</property>
+              <property name="sticky">nsew</property>
             </layout>
           </object>
         </child>

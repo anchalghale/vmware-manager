@@ -65,3 +65,25 @@ class Builder:
         ''' Sets a row value of a treeview component '''
         self.builder.get_object(name).insert(
             '', 'end', values=value)
+
+    def get_all_children(self, widget, list_=None):
+        '''Returns every child widgets recursively'''
+        if not list_:
+            list_ = []
+        for item in widget.winfo_children():
+            list_.append(item)
+            self.get_all_children(item, list_)
+        # print(list_)
+        return list_
+
+    def disable_all(self, widget):
+        '''Disables all children '''
+        for my_widget in self.get_all_children(widget):
+            if my_widget.winfo_class() in ['Entry', 'Button']:
+                my_widget['state'] = 'disabled'
+
+    def enable_all(self, widget):
+        '''Enables all children '''
+        for my_widget in self.get_all_children(widget):
+            if my_widget.winfo_class() in ['Entry', 'Button']:
+                my_widget['state'] = 'normal'

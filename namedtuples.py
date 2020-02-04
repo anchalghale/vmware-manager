@@ -6,4 +6,6 @@ Attributes = collections.namedtuple('Attributes', [
     'output_dir',
     'starting_vm',
     'ending_vm',
+    'guest_username',
+    'guest_password',
 ])
