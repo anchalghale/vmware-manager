@@ -1,7 +1,5 @@
 '''Main script'''
 import os
-import subprocess
-import time
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
@@ -11,6 +9,9 @@ import pygubu
 import vmrun
 
 from builder import Builder
+from logger import TkinterLogger
+from namedtuples import Attributes
+from pickler import load_state, save_state
 
 
 class Application:
@@ -24,20 +25,39 @@ class Application:
         builder.connect_callbacks(self)
 
         self.builder = Builder(builder)
+        self.logger = TkinterLogger(builder)
 
-        self.mother_vm = askopenfilename(title='Select mother VM', filetypes=['Vmx *.vmx'])
-        self.output_dir = askdirectory(title='Select output directory for VMs')
-        self.starting_vm = askinteger('Enter an integer', 'Starting VM')
-        self.ending_vm = askinteger('Enter an integer', 'Ending VM')
+        self.attributes = load_state('~/vmware-manager-state')
 
-        self.builder.set_entry('mother_vm', self.mother_vm)
-        self.builder.set_entry('output_dir', self.output_dir)
-        self.builder.set_entry('starting_vm', self.starting_vm)
-        self.builder.set_entry('ending_vm', self.ending_vm)
+        if self.attributes:
+            self.update_gui()
+        else:
+            self.set_attributes()
+
+    def update_gui(self):
+        '''Updates the gui components'''
+        self.builder.set_entry('mother_vm', self.attributes.mother_vm)
+        self.builder.set_entry('output_dir', self.attributes.output_dir)
+        self.builder.set_entry('starting_vm', self.attributes.starting_vm)
+        self.builder.set_entry('ending_vm', self.attributes.ending_vm)
+
+    def set_attributes(self):
+        '''Sets the attributes for batch processing'''
+        attributes = []
+        attributes.append(askopenfilename(title='Select mother VM', filetypes=['Vmx *.vmx']))
+        attributes.append(askdirectory(title='Select output directory for VMs'))
+        attributes.append(askinteger('Enter an integer', 'Starting VM'))
+        attributes.append(askinteger('Enter an integer', 'Ending VM'))
+
+        self.attributes = Attributes(*attributes)
+        save_state('~/vmware-manager-state', self.attributes)
+        self.update_gui()
 
     def clean_vms(self):
         '''Cleans all the vms in a folder'''
-        print('hi')
+        self.logger.log('Cleaning VMs...')
+        if self.attributes.output_dir:
+            os.removedirs(self.attributes.output_dir)
 
 
 def main():

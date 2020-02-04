@@ -107,92 +107,17 @@
               </object>
             </child>
             <child>
-              <object class="tk.Frame" id="buttons_1">
-                <property name="height">200</property>
-                <property name="width">200</property>
+              <object class="tk.Button" id="Set attributes">
+                <property name="command">set_attributes</property>
+                <property name="repeatinterval">0</property>
+                <property name="text" translatable="yes">Set attributes</property>
+                <property name="width">10</property>
                 <layout>
-                  <property name="column">0</property>
+                  <property name="column">6</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
                   <property name="sticky">nw</property>
                 </layout>
-                <child>
-                  <object class="tk.Button" id="Stop VMs hard_1">
-                    <property name="command">stop_vms_hard</property>
-                    <property name="text" translatable="yes">Stop VMs hard</property>
-                    <property name="width">10</property>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="propagate">False</property>
-                      <property name="row">0</property>
-                      <property name="sticky">w</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="tk.Button" id="Stop VMs soft_2">
-                    <property name="command">stop_vms_soft</property>
-                    <property name="text" translatable="yes">Stop VMs soft</property>
-                    <property name="width">10</property>
-                    <layout>
-                      <property name="column">1</property>
-                      <property name="propagate">True</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="tk.Button" id="Clean VMs_3">
-                    <property name="command">clean_vms</property>
-                    <property name="text" translatable="yes">Clean VMs</property>
-                    <property name="width">10</property>
-                    <layout>
-                      <property name="column">2</property>
-                      <property name="propagate">True</property>
-                      <property name="row">0</property>
-                      <property name="sticky">nw</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="tk.Button" id="Clone VMs_4">
-                    <property name="command">clone_vms</property>
-                    <property name="text" translatable="yes">Clone VMs</property>
-                    <property name="width">10</property>
-                    <layout>
-                      <property name="column">3</property>
-                      <property name="propagate">True</property>
-                      <property name="row">0</property>
-                      <property name="sticky">nw</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="tk.Button" id="Start VMs_5">
-                    <property name="command">start_vms</property>
-                    <property name="text" translatable="yes">Stop VMs soft</property>
-                    <property name="width">10</property>
-                    <layout>
-                      <property name="column">4</property>
-                      <property name="propagate">True</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="tk.Button" id="Set env vars_6">
-                    <property name="command">set_env_vars</property>
-                    <property name="repeatinterval">0</property>
-                    <property name="text" translatable="yes">Set env vars</property>
-                    <property name="width">10</property>
-                    <layout>
-                      <property name="column">5</property>
-                      <property name="propagate">True</property>
-                      <property name="row">0</property>
-                      <property name="sticky">nw</property>
-                    </layout>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
