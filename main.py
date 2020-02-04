@@ -6,6 +6,7 @@ import shutil
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.simpledialog import askinteger, askstring
+from tkinter.messagebox import showerror
 
 import pygubu
 from vmrun import Vmrun
@@ -57,12 +58,22 @@ class Application:
             save_state('~/vmware-manager-state', self.attributes)
         else:
             self.attributes = state
-        self.mother_vm = Vmrun(vmx=self.attributes.mother_vm,
-                               user=self.attributes.guest_username,
-                               password=self.attributes.guest_password,
-                               debug=True,
-                               vmrun=VMRUN)
+        self.mother_vm = self.get_vmx(self.attributes.mother_vm)
         self.update_gui()
+
+    def get_vmx(self, vmx_path):
+        '''Returns an Vmrun objects using a vmx file path'''
+        return Vmrun(user=self.attributes.guest_username, password=self.attributes.guest_password,
+                     vmx=vmx_path, debug=True, vmrun=VMRUN)
+
+    def is_running(self, vmx, vm_list=None):
+        '''Returns if an vm is running'''
+        if not vm_list:
+            vm_list = self.mother_vm.list()
+        for running_vm in vm_list[1:]:
+            if os.path.samefile(running_vm.rstrip(), vmx):
+                return True
+        return False
 
     def clean_vms(self):
         '''Cleans all the vms in a folder'''
@@ -70,7 +81,32 @@ class Application:
             self.builder.disable_all(self.root)
             self.logger.log('Cleaning VMs...')
             if os.path.exists(self.attributes.output_dir):
-                shutil.rmtree(self.attributes.output_dir)
+                shutil.rmtree(self.attributes.output_dir, ignore_errors=True)
+            self.builder.enable_all(self.root)
+        threading.Thread(target=task, daemon=True).start()
+
+    def set_vars(self):
+        '''Cleans all the vms in a folder'''
+        # "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe" --cmd "info-get guestinfo.server"
+        def task():
+            self.builder.disable_all(self.root)
+            self.logger.log('Settings vars...')
+            vm_list = self.mother_vm.list()
+            for i in range(self.attributes.starting_vm, self.attributes.ending_vm+1):
+                vmx = os.path.join(self.attributes.output_dir, f'worker{i}/worker{i}.vmx')
+                vmx = os.path.realpath(vmx)
+                if not os.path.exists(vmx):
+                    showerror(
+                        'VM not found', f'worker{i}.vmx not found. '
+                        f'Please make sure all VMs are cloned properly before setting the vars/')
+                    self.builder.enable_all(self.root)
+                    return
+                if self.is_running(vmx, vm_list):
+                    showerror('VM is running', f'worker{i}.vmx is running. '
+                              f'Please consider closing all the VMs before setting the vars.')
+                    self.builder.enable_all(self.root)
+                    return
+
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
 
@@ -93,14 +129,21 @@ class Application:
 
     def stop_vm(self, vmx, mode='soft'):
         '''Stops a vm'''
-        self.logger.log(f'Stopping {os.path.basename(vmx)}..., mode={mode}')
-        self.mother_vm.stop(mode)
+        self.logger.log(f'Stopping {os.path.basename(vmx)}, mode={mode} ...')
+        vmrun = self.get_vmx(vmx)
+        vmrun.stop(mode)
 
     def stop_vms(self, mode='soft'):
         '''Stops all the vms'''
         def task():
             self.builder.disable_all(self.root)
             self.stop_vm(self.attributes.mother_vm, mode)
+            for i in range(self.attributes.starting_vm, self.attributes.ending_vm+1):
+                vmx = os.path.join(self.attributes.output_dir, f'worker{i}/worker{i}.vmx')
+                vmx = os.path.realpath(vmx)
+                if not os.path.exists(vmx):
+                    continue
+                self.stop_vm(vmx, mode)
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
 

@@ -87,9 +87,10 @@
               </object>
             </child>
             <child>
-              <object class="tk.Button" id="Start VMs">
-                <property name="command">start_vms</property>
-                <property name="text" translatable="yes">Stop VMs soft</property>
+              <object class="tk.Button" id="Set env vars">
+                <property name="command">set_vars</property>
+                <property name="repeatinterval">0</property>
+                <property name="text" translatable="yes">Set vars</property>
                 <property name="width">10</property>
                 <layout>
                   <property name="column">4</property>
@@ -100,10 +101,9 @@
               </object>
             </child>
             <child>
-              <object class="tk.Button" id="Set env vars">
-                <property name="command">set_env_vars</property>
-                <property name="repeatinterval">0</property>
-                <property name="text" translatable="yes">Set env vars</property>
+              <object class="tk.Button" id="Start VMs">
+                <property name="command">start_vms</property>
+                <property name="text" translatable="yes">Start VMs</property>
                 <property name="width">10</property>
                 <layout>
                   <property name="column">5</property>
