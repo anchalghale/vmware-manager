@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface>
+  <object class="tk.Frame" id="main_frame">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <layout>
+      <property name="column">0</property>
+      <property name="propagate">True</property>
+      <property name="row">0</property>
+    </layout>
+    <child>
+      <object class="tk.LabelFrame" id="tasks">
+        <property name="height">200</property>
+        <property name="text" translatable="yes">Tasks</property>
+        <property name="width">700</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">False</property>
+          <property name="row">0</property>
+          <property name="sticky">nw</property>
+        </layout>
+        <child>
+          <object class="tk.Frame" id="buttons">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">nw</property>
+            </layout>
+            <child>
+              <object class="tk.Button" id="Stop VMs hard">
+                <property name="command">stop_vms_hard</property>
+                <property name="text" translatable="yes">Stop VMs hard</property>
+                <property name="width">10</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">False</property>
+                  <property name="row">0</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="Stop VMs soft">
+                <property name="command">stop_vms_soft</property>
+                <property name="text" translatable="yes">Stop VMs soft</property>
+                <property name="width">10</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="Clean VMs">
+                <property name="command">clean_vms</property>
+                <property name="text" translatable="yes">Clean VMs</property>
+                <property name="width">10</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">nw</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="Clone VMs">
+                <property name="command">clone_vms</property>
+                <property name="text" translatable="yes">Clone VMs</property>
+                <property name="width">10</property>
+                <layout>
+                  <property name="column">3</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">nw</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="Start VMs">
+                <property name="command">start_vms</property>
+                <property name="text" translatable="yes">Stop VMs soft</property>
+                <property name="width">10</property>
+                <layout>
+                  <property name="column">4</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="Set env vars">
+                <property name="command">set_env_vars</property>
+                <property name="repeatinterval">0</property>
+                <property name="text" translatable="yes">Set env vars</property>
+                <property name="width">10</property>
+                <layout>
+                  <property name="column">5</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">nw</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Progressbar" id="progress">
+            <property name="length">700</property>
+            <property name="orient">horizontal</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="columnspan">3</property>
+              <property name="propagate">False</property>
+              <property name="row">1</property>
+              <property name="sticky">w</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="tk.LabelFrame" id="console_frame">
+        <property name="height">200</property>
+        <property name="text" translatable="yes">Console</property>
+        <property name="width">700</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">False</property>
+          <property name="row">2</property>
+          <property name="sticky">nw</property>
+        </layout>
+        <child>
+          <object class="tk.Text" id="console">
+            <property name="height">11</property>
+            <property name="insertofftime">0</property>
+            <property name="width">85</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
