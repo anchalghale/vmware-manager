@@ -28,21 +28,34 @@ class Application:
         builder.add_from_file('mainframe.ui')
         builder.get_object('main_frame', root)
         builder.connect_callbacks(self)
-        self.root.title('VMware Manager')
+        root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        root.title('VMware Manager')
         self.builder = Builder(builder)
         self.logger = TkinterLogger(builder)
         self.mother_vm = None
 
         self.set_attributes(load_state('~/vmware-manager-state'))
 
-    def update_gui(self):
+    def update_gui(self, attributes):
         '''Updates the gui components'''
-        self.builder.set_entry('mother_vm', self.attributes.mother_vm)
-        self.builder.set_entry('output_dir', self.attributes.output_dir)
-        self.builder.set_entry('starting_vm', self.attributes.starting_vm)
-        self.builder.set_entry('ending_vm', self.attributes.ending_vm)
-        self.builder.set_entry('guest_username', self.attributes.guest_username)
-        self.builder.set_entry('guest_password', self.attributes.guest_password)
+        self.builder.set_variable('mother_vm', attributes.mother_vm)
+        self.builder.set_variable('output_dir', attributes.output_dir)
+        self.builder.set_variable('starting_vm', attributes.starting_vm)
+        self.builder.set_variable('ending_vm', attributes.ending_vm)
+        self.builder.set_variable('guest_username', attributes.guest_username)
+        self.builder.set_variable('guest_password', attributes.guest_password)
+
+    def on_closing(self):
+        ''' Callback for on closing event '''
+        save_state('~/vmware-manager-state', self.get_attributes())
+        self.root.destroy()
+
+    def get_attributes(self):
+        '''Returns an attribute class from gui value'''
+        obj = {field: self.builder.get_variable(field) for field in Attributes._fields}
+        return Attributes(**obj)
+
+    # def set_mother_vm(self):
 
     def set_attributes(self, state=None):
         '''Sets the attributes for batch processing'''
@@ -54,16 +67,17 @@ class Application:
             attributes.append(askinteger('Enter an integer', 'Ending VM'))
             attributes.append(askstring('Enter a string', 'Guest Username'))
             attributes.append(askstring('Enter a string', 'Guest Password'))
-            self.attributes = Attributes(*attributes)
-            save_state('~/vmware-manager-state', self.attributes)
+            attributes = Attributes(*attributes)
+            save_state('~/vmware-manager-state', attributes)
         else:
-            self.attributes = state
-        self.mother_vm = self.get_vmx(self.attributes.mother_vm)
-        self.update_gui()
+            attributes = state
+        self.mother_vm = self.get_vmx(attributes.mother_vm)
+        self.update_gui(attributes)
 
     def get_vmx(self, vmx_path):
         '''Returns an Vmrun objects using a vmx file path'''
-        return Vmrun(user=self.attributes.guest_username, password=self.attributes.guest_password,
+        attributes = self.get_attributes()
+        return Vmrun(user=attributes.guest_username, password=attributes.guest_password,
                      vmx=vmx_path, debug=True, vmrun=VMRUN)
 
     def is_running(self, vmx, vm_list=None):
@@ -78,10 +92,11 @@ class Application:
     def clean_vms(self):
         '''Cleans all the vms in a folder'''
         def task():
+            attributes = self.get_attributes()
             self.builder.disable_all(self.root)
             self.logger.log('Cleaning VMs...')
-            if os.path.exists(self.attributes.output_dir):
-                shutil.rmtree(self.attributes.output_dir, ignore_errors=True)
+            if os.path.exists(attributes.output_dir):
+                shutil.rmtree(attributes.output_dir, ignore_errors=True)
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
 
@@ -89,11 +104,12 @@ class Application:
         '''Cleans all the vms in a folder'''
         # "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe" --cmd "info-get guestinfo.server"
         def task():
+            attributes = self.get_attributes()
             self.builder.disable_all(self.root)
             self.logger.log('Settings vars...')
             vm_list = self.mother_vm.list()
-            for i in range(self.attributes.starting_vm, self.attributes.ending_vm+1):
-                vmx = os.path.join(self.attributes.output_dir, f'worker{i}/worker{i}.vmx')
+            for i in range(attributes.starting_vm, attributes.ending_vm+1):
+                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
                 vmx = os.path.realpath(vmx)
                 if not os.path.exists(vmx):
                     showerror(
@@ -113,10 +129,10 @@ class Application:
     def clone_vms(self):
         '''Clones all the vms in a folder'''
         def task():
+            attributes = self.get_attributes()
             self.builder.disable_all(self.root)
-            self.logger.log('Cleaning VMs...')
-            for i in range(self.attributes.starting_vm, self.attributes.ending_vm+1):
-                vmx = os.path.join(self.attributes.output_dir, f'worker{i}/worker{i}.vmx')
+            for i in range(attributes.starting_vm, attributes.ending_vm+1):
+                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
                 if os.path.exists(vmx):
                     self.logger.log(f'VM {os.path.basename(vmx)} already exists. Skipping...')
                     continue
@@ -136,10 +152,11 @@ class Application:
     def stop_vms(self, mode='soft'):
         '''Stops all the vms'''
         def task():
+            attributes = self.get_attributes()
             self.builder.disable_all(self.root)
-            self.stop_vm(self.attributes.mother_vm, mode)
-            for i in range(self.attributes.starting_vm, self.attributes.ending_vm+1):
-                vmx = os.path.join(self.attributes.output_dir, f'worker{i}/worker{i}.vmx')
+            self.stop_vm(attributes.mother_vm, mode)
+            for i in range(attributes.starting_vm, attributes.ending_vm+1):
+                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
                 vmx = os.path.realpath(vmx)
                 if not os.path.exists(vmx):
                     continue

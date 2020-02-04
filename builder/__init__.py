@@ -18,6 +18,17 @@ class Builder:
             self.builder.get_object(name).delete(0, tk.END)
             self.builder.get_object(name).insert(0, str(value))
 
+    def set_variable(self, name, value):
+        '''Sets a tk variable'''
+        if name in self.builder.tkvariables:
+            self.builder.tkvariables[name].set(value)
+
+    def get_variable(self, name):
+        '''Returns a tk variable'''
+        if name not in self.builder.tkvariables:
+            return None
+        return self.builder.tkvariables[name].get()
+
     def write_line(self, name, value):
         ''' Writes a line to a textbox '''
         self.builder.get_object(name).insert(tk.END, '>> ' + str(value) + '\n')
