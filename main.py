@@ -121,7 +121,7 @@ class Application:
                 if not os.path.exists(vmx):
                     showerror(
                         'VM not found', f'worker{i}.vmx not found. '
-                        f'Please make sure all VMs are cloned properly before setting the vars/')
+                        f'Please make sure all VMs are cloned properly before setting the vars.')
                     self.builder.enable_all(self.root)
                     return
                 if self.is_running(vmx, vm_list):
@@ -138,6 +138,33 @@ class Application:
                 vmx['guestinfo.worker'] = i
                 write_vmx(vmx_path, vmx)
 
+            self.builder.enable_all(self.root)
+        threading.Thread(target=task, daemon=True).start()
+
+    def start_vms(self):
+        '''Starts all the vms'''
+        def task():
+            attributes = self.get_attributes()
+            self.builder.disable_all(self.root)
+            for i in range(attributes.starting_vm, attributes.ending_vm+1):
+                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
+                vmx = os.path.realpath(vmx)
+                if not os.path.exists(vmx):
+                    showerror(
+                        'VM not found', f'worker{i}.vmx not found. '
+                        f'Please make sure all VMs are cloned properly before starting the vms.')
+                    self.builder.enable_all(self.root)
+                    return
+            vm_list = self.mother_vm.list()
+            for i in range(attributes.starting_vm, attributes.ending_vm+1):
+                if self.is_running(vmx, vm_list):
+                    self.logger.log(f'worker{i}.vmx is already running. Skipping...')
+                    continue
+                vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
+                vmx_path = os.path.realpath(vmx_path)
+                self.logger.log(f'Starting {os.path.basename(vmx_path)}...')
+                vmrun = self.get_vmx(vmx_path)
+                print(vmrun.start())
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
 
