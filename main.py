@@ -33,7 +33,6 @@ class Application:
         root.wm_attributes("-topmost", 1)
         self.builder = Builder(builder)
         self.logger = TkinterLogger(builder)
-        self.mother_vm = None
 
         self.set_attributes(load_state('~/vmware-manager-state'))
 
@@ -80,9 +79,12 @@ class Application:
             save_state('~/vmware-manager-state', attributes)
         else:
             self.update_gui(attributes)
-        self.mother_vm = self.get_vmx(attributes.mother_vm)
 
-    def get_vmx(self, vmx_path):
+    def get_mother_vm(self):
+        '''Returns an Vmrun object of mother vm'''
+        return self.get_vmrun(self.builder.get_variable('mother_vm'))
+
+    def get_vmrun(self, vmx_path):
         '''Returns an Vmrun objects using a vmx file path'''
         attributes = self.get_attributes()
         return Vmrun(user=attributes.guest_username, password=attributes.guest_password,
@@ -91,7 +93,7 @@ class Application:
     def is_running(self, vmx, vm_list=None):
         '''Returns if an vm is running'''
         if not vm_list:
-            vm_list = self.mother_vm.list()
+            vm_list = self.get_mother_vm().list()
         for running_vm in vm_list[1:]:
             if os.path.samefile(running_vm.rstrip(), vmx):
                 return True
@@ -115,7 +117,7 @@ class Application:
             attributes = self.get_attributes()
             self.builder.disable_all(self.root)
             self.logger.log('Settings vars...')
-            vm_list = self.mother_vm.list()
+            vm_list = self.get_mother_vm().list()
             for i in range(attributes.starting_vm, attributes.ending_vm+1):
                 vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
                 vmx = os.path.realpath(vmx)
@@ -156,7 +158,7 @@ class Application:
                         f'Please make sure all VMs are cloned properly before starting the vms.')
                     self.builder.enable_all(self.root)
                     return
-            vm_list = self.mother_vm.list()
+            vm_list = self.get_mother_vm().list()
             for i in range(attributes.starting_vm, attributes.ending_vm+1):
                 if self.is_running(vmx, vm_list):
                     self.logger.log(f'worker{i}.vmx is already running. Skipping...')
@@ -164,7 +166,7 @@ class Application:
                 vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
                 vmx_path = os.path.realpath(vmx_path)
                 self.logger.log(f'Starting {os.path.basename(vmx_path)}...')
-                vmrun = self.get_vmx(vmx_path)
+                vmrun = self.get_vmrun(vmx_path)
                 print(vmrun.start())
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
@@ -180,7 +182,7 @@ class Application:
                     self.logger.log(f'VM {os.path.basename(vmx)} already exists. Skipping...')
                     continue
                 self.logger.log(f'Cloning {os.path.basename(vmx)}..., mode=linked')
-                output = self.mother_vm.clone(f'"{vmx}"', 'linked', f'-cloneName=worker{i}')
+                output = self.get_mother_vm().clone(f'"{vmx}"', 'linked', f'-cloneName=worker{i}')
                 if output != []:
                     self.logger.log(f'Error while cloning: {" ".join(output)}')
             self.builder.enable_all(self.root)
@@ -189,7 +191,7 @@ class Application:
     def stop_vm(self, vmx, mode='soft'):
         '''Stops a vm'''
         self.logger.log(f'Stopping {os.path.basename(vmx)}, mode={mode} ...')
-        vmrun = self.get_vmx(vmx)
+        vmrun = self.get_vmrun(vmx)
         vmrun.stop(mode)
 
     def stop_vms(self, mode='soft'):
