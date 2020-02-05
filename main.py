@@ -30,6 +30,7 @@ class Application:
         builder.connect_callbacks(self)
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
         root.title('VMware Manager')
+        root.wm_attributes("-topmost", 1)
         self.builder = Builder(builder)
         self.logger = TkinterLogger(builder)
         self.mother_vm = None
