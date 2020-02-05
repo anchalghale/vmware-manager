@@ -4,85 +4,59 @@ import threading
 import shutil
 
 from tkinter import Tk
-from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
 
-import pygubu
 from vmrun import Vmrun
 
-from builder import Builder
-from logger import TkinterLogger
-from namedtuples import Attributes
-from pickler import load_state, save_state
 from vmx import read_vmx, write_vmx
+from gui import Gui
 
 VMRUN = 'C:/Program Files (x86)/VMware/VMware Workstation/vmrun.exe'
 
 
-class Application:
+class StopIterationException(Exception):
+    '''Raised when the iternation needs to be terminated'''
+
+
+def iterate_check_exists_cb(mother_vm_path, vmx_path, index):
+    '''Iterate callback for checking if all the vms are found'''
+    if not os.path.exists(vmx_path):
+        showerror('VM not found', f'worker{index}.vmx not found. '
+                  f'Please make sure all VMs are cloned properly.')
+        raise StopIterationException
+
+
+class Application(Gui):
     '''The gui class of the application'''
 
     def __init__(self, root):
-        self.root = root
-        builder = pygubu.Builder()
-        builder.add_from_file('mainframe.ui')
-        builder.get_object('main_frame', root)
-        builder.connect_callbacks(self)
-        root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        root.title('VMware Manager')
-        root.wm_attributes("-topmost", 1)
-        self.builder = Builder(builder)
-        self.logger = TkinterLogger(builder)
+        Gui.__init__(self, root)
 
-        self.set_attributes(load_state('~/vmware-manager-state'))
-
-    def update_gui(self, attributes):
-        '''Updates the gui components'''
-        self.builder.set_variable('mother_vm', attributes.mother_vm)
-        self.builder.set_variable('output_dir', attributes.output_dir)
-        self.builder.set_variable('starting_vm', attributes.starting_vm)
-        self.builder.set_variable('ending_vm', attributes.ending_vm)
-        self.builder.set_variable('guest_username', attributes.guest_username)
-        self.builder.set_variable('guest_password', attributes.guest_password)
-
-    def on_closing(self):
-        ''' Callback for on closing event '''
-        save_state('~/vmware-manager-state', self.get_attributes())
-        self.root.destroy()
-
-    def get_attributes(self):
-        '''Returns an attribute class from gui value'''
-        obj = {field: self.builder.get_variable(field) for field in Attributes._fields}
-        return Attributes(**obj)
-
-    def set_mother_vm(self):
-        '''Sets the mother_vm attribute'''
-        mother_vm = os.path.realpath(askopenfilename(
-            title='Select mother VM', filetypes=['Vmx *.vmx']))
-        self.builder.set_variable('mother_vm', mother_vm)
-
-    def set_output_dir(self):
-        '''Sets the output_dir attribute'''
-        output_dir = os.path.realpath(askdirectory(title='Select output directory for VMs'))
-        self.builder.set_variable('output_dir', output_dir)
-
-    def set_attributes(self, attributes=None):
-        '''Sets the attributes for batch processing'''
-        if not attributes:
-            self.builder.set_variable('starting_vm', 1)
-            self.builder.set_variable('ending_vm', 10)
-            self.builder.set_variable('guest_username', 'John')
-            self.builder.set_variable('guest_password', '1234')
-            self.set_mother_vm()
-            self.set_output_dir()
+    def iterate(self, callback, include_mother_vms=False):
+        '''Iterates through all the vms'''
+        def task(i):
+            vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
+            vmx_path = os.path.realpath(vmx_path)
+            callback(attributes.mother_vm1, vmx_path, i)
+        try:
+            self.builder.disable_all(self.root)
             attributes = self.get_attributes()
-            save_state('~/vmware-manager-state', attributes)
-        else:
-            self.update_gui(attributes)
+            if include_mother_vms:
+                callback(attributes.mother_vm1, attributes.mother_vm1, None)
+                callback(attributes.mother_vm2, attributes.mother_vm2, None)
+            for i in range(attributes.starting_vm1, attributes.ending_vm1+1):
+                task(i)
+            for i in range(attributes.starting_vm2, attributes.ending_vm2+1):
+                task(i)
+            self.builder.enable_all(self.root)
+            return True
+        except StopIterationException:
+            self.builder.enable_all(self.root)
+            return False
 
-    def get_mother_vm(self):
-        '''Returns an Vmrun object of mother vm'''
-        return self.get_vmrun(self.builder.get_variable('mother_vm'))
+    def get_mother_vm(self, index):
+        '''Returns an Vmrun object of a mother vm'''
+        return self.get_vmrun(self.builder.get_variable(f'mother_vm{index}'))
 
     def get_vmrun(self, vmx_path):
         '''Returns an Vmrun objects using a vmx file path'''
@@ -90,12 +64,12 @@ class Application:
         return Vmrun(user=attributes.guest_username, password=attributes.guest_password,
                      vmx=vmx_path, debug=True, vmrun=VMRUN)
 
-    def is_running(self, vmx, vm_list=None):
+    def is_running(self, vmx_path, vm_list=None):
         '''Returns if an vm is running'''
         if not vm_list:
-            vm_list = self.get_mother_vm().list()
+            vm_list = self.get_mother_vm(1).list()
         for running_vm in vm_list[1:]:
-            if os.path.samefile(running_vm.rstrip(), vmx):
+            if os.path.samefile(running_vm.rstrip(), vmx_path):
                 return True
         return False
 
@@ -113,101 +87,71 @@ class Application:
     def set_vars(self):
         '''Cleans all the vms in a folder'''
         # "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe" --cmd "info-get guestinfo.server"
-        def task():
-            attributes = self.get_attributes()
-            self.builder.disable_all(self.root)
-            self.logger.log('Settings vars...')
-            vm_list = self.get_mother_vm().list()
-            for i in range(attributes.starting_vm, attributes.ending_vm+1):
-                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
-                vmx = os.path.realpath(vmx)
-                if not os.path.exists(vmx):
-                    showerror(
-                        'VM not found', f'worker{i}.vmx not found. '
-                        f'Please make sure all VMs are cloned properly before setting the vars.')
-                    self.builder.enable_all(self.root)
-                    return
-                if self.is_running(vmx, vm_list):
-                    showerror('VM is running', f'worker{i}.vmx is running. '
-                              f'Please consider closing all the VMs before setting the vars.')
-                    self.builder.enable_all(self.root)
-                    return
-            for i in range(attributes.starting_vm, attributes.ending_vm+1):
-                vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
-                vmx_path = os.path.realpath(vmx_path)
-                self.logger.log(f'Writing variables to {os.path.basename(vmx_path)}...')
-                vmx = read_vmx(vmx_path)
-                vmx['guestinfo.server'] = os.environ['COMPUTERNAME']
-                vmx['guestinfo.worker'] = i
-                write_vmx(vmx_path, vmx)
 
-            self.builder.enable_all(self.root)
+        vm_list = self.get_mother_vm(1).list()
+
+        def check_running_cb(mother_vm_path, vmx_path, index):
+            '''Iterate callback for checking if any vm is running'''
+            if self.is_running(vmx_path, vm_list):
+                showerror('VM is running', f'worker{index}.vmx is running. '
+                          f'Please consider closing all the VMs.')
+                raise StopIterationException
+
+        def iterate_cb(mother_vm_path, vmx_path, index):
+            self.logger.log(f'Writing variables to {os.path.basename(vmx_path)}...')
+            vmx = read_vmx(vmx_path)
+            vmx['guestinfo.server'] = os.environ['COMPUTERNAME']
+            vmx['guestinfo.worker'] = index
+            write_vmx(vmx_path, vmx)
+
+        def task():
+            if self.iterate(iterate_check_exists_cb) and self.iterate(check_running_cb):
+                self.iterate(iterate_cb)
         threading.Thread(target=task, daemon=True).start()
 
     def start_vms(self):
         '''Starts all the vms'''
+        vm_list = self.get_mother_vm(1).list()
+
+        def iterate_cb(mother_vm_path, vmx_path, index):
+            if self.is_running(vmx_path, vm_list):
+                self.logger.log(f'worker{index}.vmx is already running. Skipping...')
+                return
+            self.logger.log(f'Starting {os.path.basename(vmx_path)}...')
+            vmrun = self.get_vmrun(vmx_path)
+            print(vmrun.start())
+
         def task():
-            attributes = self.get_attributes()
-            self.builder.disable_all(self.root)
-            for i in range(attributes.starting_vm, attributes.ending_vm+1):
-                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
-                vmx = os.path.realpath(vmx)
-                if not os.path.exists(vmx):
-                    showerror(
-                        'VM not found', f'worker{i}.vmx not found. '
-                        f'Please make sure all VMs are cloned properly before starting the vms.')
-                    self.builder.enable_all(self.root)
-                    return
-            vm_list = self.get_mother_vm().list()
-            for i in range(attributes.starting_vm, attributes.ending_vm+1):
-                if self.is_running(vmx, vm_list):
-                    self.logger.log(f'worker{i}.vmx is already running. Skipping...')
-                    continue
-                vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
-                vmx_path = os.path.realpath(vmx_path)
-                self.logger.log(f'Starting {os.path.basename(vmx_path)}...')
-                vmrun = self.get_vmrun(vmx_path)
-                print(vmrun.start())
-            self.builder.enable_all(self.root)
+            if self.iterate(iterate_check_exists_cb):
+                self.iterate(iterate_cb)
         threading.Thread(target=task, daemon=True).start()
 
     def clone_vms(self):
         '''Clones all the vms in a folder'''
-        def task():
-            attributes = self.get_attributes()
-            self.builder.disable_all(self.root)
-            for i in range(attributes.starting_vm, attributes.ending_vm+1):
-                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
-                if os.path.exists(vmx):
-                    self.logger.log(f'VM {os.path.basename(vmx)} already exists. Skipping...')
-                    continue
-                self.logger.log(f'Cloning {os.path.basename(vmx)}..., mode=linked')
-                output = self.get_mother_vm().clone(f'"{vmx}"', 'linked', f'-cloneName=worker{i}')
-                if output != []:
-                    self.logger.log(f'Error while cloning: {" ".join(output)}')
-            self.builder.enable_all(self.root)
-        threading.Thread(target=task, daemon=True).start()
+        def iterate_cb(mother_vm_path, vmx_path, index):
+            if os.path.exists(vmx_path):
+                self.logger.log(f'VM {os.path.basename(vmx_path)} already exists. Skipping...')
+                return
+            self.logger.log(f'Cloning {os.path.basename(vmx_path)}..., mode=linked')
+            vmrun = self.get_vmrun(mother_vm_path)
+            output = vmrun.clone(f'"{vmx_path}"', 'linked', f'-cloneName=worker{index}')
+            if output != []:
+                self.logger.log(" ".join(output))
+        threading.Thread(target=lambda: self.iterate(iterate_cb), daemon=True).start()
 
-    def stop_vm(self, vmx, mode='soft'):
+    def stop_vm(self, vmx_path, mode='soft'):
         '''Stops a vm'''
-        self.logger.log(f'Stopping {os.path.basename(vmx)}, mode={mode} ...')
-        vmrun = self.get_vmrun(vmx)
+        self.logger.log(f'Stopping {os.path.basename(vmx_path)}, mode={mode} ...')
+        vmrun = self.get_vmrun(vmx_path)
         vmrun.stop(mode)
 
     def stop_vms(self, mode='soft'):
         '''Stops all the vms'''
-        def task():
-            attributes = self.get_attributes()
-            self.builder.disable_all(self.root)
-            self.stop_vm(attributes.mother_vm, mode)
-            for i in range(attributes.starting_vm, attributes.ending_vm+1):
-                vmx = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
-                vmx = os.path.realpath(vmx)
-                if not os.path.exists(vmx):
-                    continue
-                self.stop_vm(vmx, mode)
-            self.builder.enable_all(self.root)
-        threading.Thread(target=task, daemon=True).start()
+        def iterate_cb(mother_vm_path, vmx_path, index):
+            if not os.path.exists(vmx_path):
+                return
+            self.stop_vm(vmx_path, mode)
+        threading.Thread(target=lambda: self.iterate(iterate_cb, True), daemon=True).start()
 
     def stop_vms_soft(self):
         '''Stops all the vms mode=soft'''

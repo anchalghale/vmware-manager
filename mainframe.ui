@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface>
   <object class="tk.Frame" id="main_frame">
-    <property name="height">350</property>
+    <property name="height">400</property>
     <property name="width">900</property>
     <layout>
       <property name="column">0</property>
@@ -10,7 +10,7 @@
     </layout>
     <child>
       <object class="tk.LabelFrame" id="tasks">
-        <property name="height">150</property>
+        <property name="height">200</property>
         <property name="text" translatable="yes">Tasks</property>
         <property name="width">900</property>
         <layout>
@@ -126,8 +126,8 @@
               <property name="sticky">ew</property>
             </layout>
             <child>
-              <object class="tk.Label" id="Mother VM">
-                <property name="text" translatable="yes">Mother VM</property>
+              <object class="tk.Label" id="Mother VM 1">
+                <property name="text" translatable="yes">Mother VM 1</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="propagate">True</property>
@@ -136,8 +136,8 @@
               </object>
             </child>
             <child>
-              <object class="tk.Entry" id="mother_vm">
-                <property name="textvariable">string:mother_vm</property>
+              <object class="tk.Entry" id="mother_vm1">
+                <property name="textvariable">string:mother_vm1</property>
                 <property name="width">50</property>
                 <layout>
                   <property name="column">0</property>
@@ -147,12 +147,33 @@
               </object>
             </child>
             <child>
+              <object class="tk.Label" id="Mother VM 2">
+                <property name="text" translatable="yes">Mother VM 2</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="mother_vm2">
+                <property name="textvariable">string:mother_vm2</property>
+                <property name="width">50</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
               <object class="tk.Label" id="Output Directory">
                 <property name="text" translatable="yes">Output Directory</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="propagate">True</property>
-                  <property name="row">2</property>
+                  <property name="row">4</property>
                 </layout>
               </object>
             </child>
@@ -163,13 +184,13 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="propagate">True</property>
-                  <property name="row">3</property>
+                  <property name="row">5</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="tk.Label" id="Starting VM">
-                <property name="text" translatable="yes">Starting VM</property>
+              <object class="tk.Label" id="Starting VM 1">
+                <property name="text" translatable="yes">Starting VM 1</property>
                 <layout>
                   <property name="column">2</property>
                   <property name="propagate">True</property>
@@ -178,8 +199,8 @@
               </object>
             </child>
             <child>
-              <object class="tk.Entry" id="starting_vm">
-                <property name="textvariable">int:starting_vm</property>
+              <object class="tk.Entry" id="starting_vm1">
+                <property name="textvariable">int:starting_vm1</property>
                 <layout>
                   <property name="column">2</property>
                   <property name="propagate">True</property>
@@ -188,22 +209,22 @@
               </object>
             </child>
             <child>
-              <object class="tk.Label" id="Ending VM">
-                <property name="text" translatable="yes">Ending VM</property>
+              <object class="tk.Label" id="Ending VM 1">
+                <property name="text" translatable="yes">Ending VM 1</property>
                 <layout>
-                  <property name="column">2</property>
+                  <property name="column">3</property>
                   <property name="propagate">True</property>
-                  <property name="row">2</property>
+                  <property name="row">0</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="tk.Entry" id="ending_vm">
-                <property name="textvariable">int:ending_vm</property>
+              <object class="tk.Entry" id="ending_vm1">
+                <property name="textvariable">int:ending_vm1</property>
                 <layout>
-                  <property name="column">2</property>
+                  <property name="column">3</property>
                   <property name="propagate">True</property>
-                  <property name="row">3</property>
+                  <property name="row">1</property>
                 </layout>
               </object>
             </child>
@@ -211,7 +232,7 @@
               <object class="tk.Label" id="Guest Username">
                 <property name="text" translatable="yes">Guest Username</property>
                 <layout>
-                  <property name="column">3</property>
+                  <property name="column">4</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
                 </layout>
@@ -221,7 +242,7 @@
               <object class="tk.Entry" id="guest_username">
                 <property name="textvariable">string:guest_username</property>
                 <layout>
-                  <property name="column">3</property>
+                  <property name="column">4</property>
                   <property name="propagate">True</property>
                   <property name="row">1</property>
                 </layout>
@@ -231,7 +252,7 @@
               <object class="tk.Label" id="Guest Password">
                 <property name="text" translatable="yes">Guest Password</property>
                 <layout>
-                  <property name="column">3</property>
+                  <property name="column">4</property>
                   <property name="propagate">True</property>
                   <property name="row">2</property>
                 </layout>
@@ -241,6 +262,46 @@
               <object class="tk.Entry" id="guest_password">
                 <property name="textvariable">string:guest_password</property>
                 <layout>
+                  <property name="column">4</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Label" id="Starting VM 2">
+                <property name="text" translatable="yes">Starting VM 2</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="starting_vm2">
+                <property name="textvariable">int:starting_vm2</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Label" id="Ending VM 2">
+                <property name="text" translatable="yes">Ending VM 2</property>
+                <layout>
+                  <property name="column">3</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="ending_vm2">
+                <property name="textvariable">int:ending_vm2</property>
+                <layout>
                   <property name="column">3</property>
                   <property name="propagate">True</property>
                   <property name="row">3</property>
@@ -248,8 +309,19 @@
               </object>
             </child>
             <child>
-              <object class="tk.Button" id="Set mother VM">
-                <property name="command">set_mother_vm</property>
+              <object class="tk.Button" id="Set mother VM 2">
+                <property name="command">set_mother_vm2</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="Set mother VM 1">
+                <property name="command">set_mother_vm1</property>
                 <property name="text" translatable="yes">Browse</property>
                 <layout>
                   <property name="column">1</property>
@@ -265,7 +337,7 @@
                 <layout>
                   <property name="column">1</property>
                   <property name="propagate">True</property>
-                  <property name="row">3</property>
+                  <property name="row">5</property>
                 </layout>
               </object>
             </child>

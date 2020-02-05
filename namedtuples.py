@@ -2,10 +2,13 @@
 import collections
 
 Attributes = collections.namedtuple('Attributes', [
-    'mother_vm',
+    'mother_vm1',
+    'mother_vm2',
     'output_dir',
-    'starting_vm',
-    'ending_vm',
+    'starting_vm1',
+    'ending_vm1',
+    'starting_vm2',
+    'ending_vm2',
     'guest_username',
     'guest_password',
 ])

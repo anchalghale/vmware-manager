@@ -23,5 +23,5 @@ def load_state(file_path):
         with open(file_path, 'rb') as file:
             data = pickle.load(file)
             return data
-    except FileNotFoundError:
+    except (FileNotFoundError, TypeError):
         return None
