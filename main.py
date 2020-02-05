@@ -34,20 +34,36 @@ class Application(Gui):
 
     def iterate(self, callback, include_mother_vms=False):
         '''Iterates through all the vms'''
-        def task(i):
+        progress = 0
+        self.builder.builder.get_object('progress')['value'] = 0
+
+        def update_progress():
+            nonlocal progress
+            progress += 1
+            self.builder.builder.get_object('progress')['value'] = progress * 100 // total
+
+        def task(mother_vm_path, i):
             vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
             vmx_path = os.path.realpath(vmx_path)
-            callback(attributes.mother_vm1, vmx_path, i)
+            callback(mother_vm_path, vmx_path, i)
+            update_progress()
+
         try:
             self.builder.disable_all(self.root)
             attributes = self.get_attributes()
+            total = attributes.ending_vm1 + attributes.ending_vm2 - \
+                attributes.starting_vm1 - attributes.starting_vm2 + 2
+            if include_mother_vms:
+                total += 2
             if include_mother_vms:
                 callback(attributes.mother_vm1, attributes.mother_vm1, None)
+                update_progress()
                 callback(attributes.mother_vm2, attributes.mother_vm2, None)
+                update_progress()
             for i in range(attributes.starting_vm1, attributes.ending_vm1+1):
-                task(i)
+                task(attributes.mother_vm1, i)
             for i in range(attributes.starting_vm2, attributes.ending_vm2+1):
-                task(i)
+                task(attributes.mother_vm2, i)
             self.builder.enable_all(self.root)
             return True
         except StopIterationException:
