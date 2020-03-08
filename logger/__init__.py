@@ -13,7 +13,7 @@ class Logger:
         ''' Sets value of entry component '''
         raise NotImplementedError
 
-    def log(self, message):
+    def log(self, message, console):
         ''' Logs a message to the console with time '''
         raise NotImplementedError
 
@@ -21,14 +21,16 @@ class Logger:
 class CliLogger(Logger):
     ''' A cli logger '''
 
-    def __init__(self, log_format='%H:%M:%S'):
+    def __init__(self, log_format='%H:%M:%S', ignore_entries=False):
         Logger.__init__(self, log_format)
+        self.ignore_entries = ignore_entries
 
     def set_entry(self, name, value):
         ''' Sets value of entry component '''
-        print(f'{name} -> {value}')
+        if not self.ignore_entries:
+            print(f'{name} -> {value}')
 
-    def log(self, message):
+    def log(self, message, console=None):
         ''' Logs a message to the console including time '''
         print(f'{datetime.datetime.now().strftime(self.log_format)} - {str(message)}')
 
@@ -55,7 +57,7 @@ class TkinterLogger(Logger):
         self.builder.get_object(name).insert(tk.END, '>> ' + str(value) + '\n')
         self.builder.get_object(name).see('end')
 
-    def log(self, message):
+    def log(self, message, console='console'):
         ''' Logs a message to the console including time '''
         self.write_line(
-            'console', f'{datetime.datetime.now().strftime(self.log_format)} - {str(message)}')
+            console, f'{datetime.datetime.now().strftime(self.log_format)} - {str(message)}')

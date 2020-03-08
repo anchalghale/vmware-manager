@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface>
   <object class="tk.Frame" id="main_frame">
-    <property name="height">400</property>
+    <property name="height">500</property>
     <property name="width">900</property>
     <layout>
       <property name="column">0</property>
@@ -10,7 +10,7 @@
     </layout>
     <child>
       <object class="tk.LabelFrame" id="tasks">
-        <property name="height">200</property>
+        <property name="height">300</property>
         <property name="text" translatable="yes">Tasks</property>
         <property name="width">900</property>
         <layout>
@@ -147,6 +147,17 @@
               </object>
             </child>
             <child>
+              <object class="tk.Button" id="browse_1">
+                <property name="command">set_mother_vm1</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
               <object class="tk.Label" id="Mother VM 2">
                 <property name="text" translatable="yes">Mother VM 2</property>
                 <layout>
@@ -168,12 +179,87 @@
               </object>
             </child>
             <child>
+              <object class="tk.Button" id="browse_2">
+                <property name="command">set_mother_vm2</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Label" id="VPN VM 1">
+                <property name="text" translatable="yes">VPN VM 1</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">4</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="vpn_vm_1">
+                <property name="textvariable">string:vpn_vm1</property>
+                <property name="width">50</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="browse_3">
+                <property name="command">set_vpn_vm1</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Label" id="VPN VM 2">
+                <property name="text" translatable="yes">VPN VM 2</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">6</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="vpn_vm_2">
+                <property name="textvariable">string:vpn_vm2</property>
+                <property name="width">50</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">7</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="browse_4">
+                <property name="command">set_vpn_vm2</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">7</property>
+                </layout>
+              </object>
+            </child>
+            <child>
               <object class="tk.Label" id="Output Directory">
                 <property name="text" translatable="yes">Output Directory</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="propagate">True</property>
-                  <property name="row">4</property>
+                  <property name="row">8</property>
                 </layout>
               </object>
             </child>
@@ -184,7 +270,18 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="propagate">True</property>
-                  <property name="row">5</property>
+                  <property name="row">9</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="browse_5">
+                <property name="command">set_output_dir</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">9</property>
                 </layout>
               </object>
             </child>
@@ -229,46 +326,6 @@
               </object>
             </child>
             <child>
-              <object class="tk.Label" id="Guest Username">
-                <property name="text" translatable="yes">Guest Username</property>
-                <layout>
-                  <property name="column">4</property>
-                  <property name="propagate">True</property>
-                  <property name="row">0</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="tk.Entry" id="guest_username">
-                <property name="textvariable">string:guest_username</property>
-                <layout>
-                  <property name="column">4</property>
-                  <property name="propagate">True</property>
-                  <property name="row">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="tk.Label" id="Guest Password">
-                <property name="text" translatable="yes">Guest Password</property>
-                <layout>
-                  <property name="column">4</property>
-                  <property name="propagate">True</property>
-                  <property name="row">2</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="tk.Entry" id="guest_password">
-                <property name="textvariable">string:guest_password</property>
-                <layout>
-                  <property name="column">4</property>
-                  <property name="propagate">True</property>
-                  <property name="row">3</property>
-                </layout>
-              </object>
-            </child>
-            <child>
               <object class="tk.Label" id="Starting VM 2">
                 <property name="text" translatable="yes">Starting VM 2</property>
                 <layout>
@@ -309,35 +366,42 @@
               </object>
             </child>
             <child>
-              <object class="tk.Button" id="Set mother VM 2">
-                <property name="command">set_mother_vm2</property>
-                <property name="text" translatable="yes">Browse</property>
+              <object class="tk.Label" id="Guest Username">
+                <property name="text" translatable="yes">Guest Username</property>
                 <layout>
-                  <property name="column">1</property>
+                  <property name="column">4</property>
                   <property name="propagate">True</property>
-                  <property name="row">3</property>
+                  <property name="row">0</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="tk.Button" id="Set mother VM 1">
-                <property name="command">set_mother_vm1</property>
-                <property name="text" translatable="yes">Browse</property>
+              <object class="tk.Entry" id="guest_username">
+                <property name="textvariable">string:guest_username</property>
                 <layout>
-                  <property name="column">1</property>
+                  <property name="column">4</property>
                   <property name="propagate">True</property>
                   <property name="row">1</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="tk.Button" id="Set output dir">
-                <property name="command">set_output_dir</property>
-                <property name="text" translatable="yes">Browse</property>
+              <object class="tk.Label" id="Guest Password">
+                <property name="text" translatable="yes">Guest Password</property>
                 <layout>
-                  <property name="column">1</property>
+                  <property name="column">4</property>
                   <property name="propagate">True</property>
-                  <property name="row">5</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="guest_password">
+                <property name="textvariable">string:guest_password</property>
+                <layout>
+                  <property name="column">4</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
                 </layout>
               </object>
             </child>
