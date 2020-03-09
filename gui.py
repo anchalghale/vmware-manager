@@ -88,6 +88,8 @@ class Gui:
             self.builder.set_variable('ending_vm2', 20)
             self.builder.set_variable('guest_username', 'John')
             self.builder.set_variable('guest_password', '1234')
+            self.builder.set_variable('start_vms_on_start_up', False)
+            self.builder.set_variable('start_vms_periodically', False)
             self.set_vms()
             self.set_output_dir()
             attributes = self.get_attributes()

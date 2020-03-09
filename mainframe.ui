@@ -116,7 +116,7 @@
           </object>
         </child>
         <child>
-          <object class="tk.Frame" id="attributes">
+          <object class="tk.Frame" id="inputs">
             <property name="height">200</property>
             <property name="width">200</property>
             <layout>
@@ -402,6 +402,28 @@
                   <property name="column">4</property>
                   <property name="propagate">True</property>
                   <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Checkbutton" id="start_vms_on_start_up">
+                <property name="text" translatable="yes">Start VMs on startup</property>
+                <property name="variable">boolean:start_vms_on_start_up</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Checkbutton" id="start_vms_periodically">
+                <property name="text" translatable="yes">Start VMs periodically</property>
+                <property name="variable">boolean:start_vms_periodically</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="propagate">True</property>
+                  <property name="row">7</property>
                 </layout>
               </object>
             </child>

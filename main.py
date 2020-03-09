@@ -2,6 +2,7 @@
 import os
 import threading
 import shutil
+import time
 
 from tkinter import Tk
 from tkinter.messagebox import showerror
@@ -31,6 +32,8 @@ class Application(Gui):
 
     def __init__(self, root):
         Gui.__init__(self, root)
+        self.start_vms_on_start_up()
+        self.start_vms_periodically()
 
     def iterate(self, callback, include_mother_vms=False, include_vpn_vms=False):
         '''Iterates through all the vms'''
@@ -183,6 +186,22 @@ class Application(Gui):
     def stop_vms_hard(self):
         '''Stops all the vms mode=hard'''
         self.stop_vms(mode='hard')
+
+    def start_vms_on_start_up(self):
+        '''Starts all the vms on startup if the option is checked'''
+        if self.builder.get_variable('start_vms_on_start_up'):
+            self.logger.log('Starting startup script...')
+            self.start_vms()
+
+    def start_vms_periodically(self):
+        '''Starts all the vms periodically if the option is checked'''
+        def task():
+            while True:
+                time.sleep(30 * 60)  # 30 mins
+                if self.builder.get_variable('start_vms_periodically'):
+                    self.logger.log('Starting periodic task...')
+                    self.start_vms()
+        threading.Thread(target=task, daemon=True).start()
 
 
 def main():
