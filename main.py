@@ -8,6 +8,7 @@ from tkinter import Tk
 from tkinter.messagebox import showerror
 
 from vmrun import Vmrun
+from updater import start_update_task
 
 from vmx import read_vmx, write_vmx
 from gui import Gui
@@ -34,6 +35,7 @@ class Application(Gui):
         Gui.__init__(self, root)
         self.start_vms_on_start_up()
         self.start_vms_periodically()
+        start_update_task(self.logger, 60 * 60)  # 1 hour
 
     def iterate(self, callback, include_mother_vms=False, include_vpn_vms=False):
         '''Iterates through all the vms'''
