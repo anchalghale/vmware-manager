@@ -32,7 +32,7 @@ class Application(Gui):
     def __init__(self, root):
         Gui.__init__(self, root)
 
-    def iterate(self, callback, include_mother_vms=False):
+    def iterate(self, callback, include_mother_vms=False, include_vpn_vms=False):
         '''Iterates through all the vms'''
         progress = 0
         self.builder.builder.get_object('progress')['value'] = 0
@@ -55,10 +55,17 @@ class Application(Gui):
                 attributes.starting_vm1 - attributes.starting_vm2 + 2
             if include_mother_vms:
                 total += 2
+            if include_vpn_vms:
+                total += 2
             if include_mother_vms:
                 callback(attributes.mother_vm1, attributes.mother_vm1, None)
                 update_progress()
                 callback(attributes.mother_vm2, attributes.mother_vm2, None)
+                update_progress()
+            if include_vpn_vms:
+                callback(attributes.vpn_vm1, attributes.vpn_vm1, None)
+                update_progress()
+                callback(attributes.vpn_vm2, attributes.vpn_vm2, None)
                 update_progress()
             for i in range(attributes.starting_vm1, attributes.ending_vm1+1):
                 task(attributes.mother_vm1, i)
@@ -131,7 +138,7 @@ class Application(Gui):
 
         def iterate_cb(mother_vm_path, vmx_path, index):
             if self.is_running(vmx_path, vm_list):
-                self.logger.log(f'worker{index}.vmx is already running. Skipping...')
+                self.logger.log(f'{os.path.basename(vmx_path)} is already running. Skipping...')
                 return
             self.logger.log(f'Starting {os.path.basename(vmx_path)}...')
             vmrun = self.get_vmrun(vmx_path)
@@ -139,7 +146,7 @@ class Application(Gui):
 
         def task():
             if self.iterate(iterate_check_exists_cb):
-                self.iterate(iterate_cb)
+                self.iterate(iterate_cb, include_vpn_vms=True)
         threading.Thread(target=task, daemon=True).start()
 
     def clone_vms(self):

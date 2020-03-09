@@ -4,6 +4,8 @@ import collections
 Attributes = collections.namedtuple('Attributes', [
     'mother_vm1',
     'mother_vm2',
+    'vpn_vm1',
+    'vpn_vm2',
     'output_dir',
     'starting_vm1',
     'ending_vm1',

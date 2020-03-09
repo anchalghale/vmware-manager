@@ -32,15 +32,8 @@ class Gui:
 
     def update_gui(self, attributes):
         '''Updates the gui components'''
-        self.builder.set_variable('mother_vm1', attributes.mother_vm1)
-        self.builder.set_variable('mother_vm2', attributes.mother_vm2)
-        self.builder.set_variable('output_dir', attributes.output_dir)
-        self.builder.set_variable('starting_vm1', attributes.starting_vm1)
-        self.builder.set_variable('ending_vm1', attributes.ending_vm1)
-        self.builder.set_variable('starting_vm2', attributes.starting_vm2)
-        self.builder.set_variable('ending_vm2', attributes.ending_vm2)
-        self.builder.set_variable('guest_username', attributes.guest_username)
-        self.builder.set_variable('guest_password', attributes.guest_password)
+        for field in attributes._fields:
+            self.builder.set_variable(field, getattr(attributes, field))
 
     def on_closing(self):
         ''' Callback for on closing event '''
@@ -52,24 +45,34 @@ class Gui:
         obj = {field: self.builder.get_variable(field) for field in Attributes._fields}
         return Attributes(**obj)
 
-    def set_mother_vm(self, index):
+    def set_vm(self, label, index):
         '''Sets a mother_vm attribute'''
         path = os.path.realpath(askopenfilename(
-            title=f'Select mother VM {index}', filetypes=['Vmx *.vmx']))
-        self.builder.set_variable(f'mother_vm{index}', path)
+            title=f'Select {label} VM {index}', filetypes=['Vmx *.vmx']))
+        self.builder.set_variable(f'{label}_vm{index}', path)
 
     def set_mother_vm1(self):
         '''Sets a mother_vm1 attribute'''
-        self.set_mother_vm(1)
+        self.set_vm('mother', 1)
 
     def set_mother_vm2(self):
         '''Sets a mother_vm2 attribute'''
-        self.set_mother_vm(2)
+        self.set_vm('mother', 2)
 
-    def set_mother_vms(self):
+    def set_vpn_vm1(self):
+        '''Sets a vpn_vm1 attribute'''
+        self.set_vm('vpn', 1)
+
+    def set_vpn_vm2(self):
+        '''Sets a vpn_vm2 attribute'''
+        self.set_vm('vpn', 2)
+
+    def set_vms(self):
         '''Sets the mother_vms attribute'''
-        self.set_mother_vm(1)
-        self.set_mother_vm(2)
+        self.set_vm('mother', 1)
+        self.set_vm('mother', 2)
+        self.set_vm('vpn', 1)
+        self.set_vm('vpn', 2)
 
     def set_output_dir(self):
         '''Sets the output_dir attribute'''
@@ -85,7 +88,7 @@ class Gui:
             self.builder.set_variable('ending_vm2', 20)
             self.builder.set_variable('guest_username', 'John')
             self.builder.set_variable('guest_password', '1234')
-            self.set_mother_vms()
+            self.set_vms()
             self.set_output_dir()
             attributes = self.get_attributes()
             save_state('~/vmware-manager-state', attributes)
