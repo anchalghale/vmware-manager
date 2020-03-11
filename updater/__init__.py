@@ -30,6 +30,14 @@ def start_update_task(logger, update_interval):
     threading.Thread(target=update_task, args=[logger, update_interval], daemon=True).start()
 
 
+def wait_for_update(logger, update_interval):
+    '''Periodically updates the bot in a thread'''
+    logger.log('Waiting for a update...')
+    while True:
+        update(logger, disable_logging=True)
+        time.sleep(update_interval)
+
+
 def update(logger: Logger, disable_logging=False):
     '''Checks for updates and updates if out of date'''
     if not disable_logging:

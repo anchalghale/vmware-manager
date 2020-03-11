@@ -117,6 +117,7 @@ class Application(Gui):
         # "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe" --cmd "info-get guestinfo.server"
 
         vm_list = self.get_mother_vm(1).list()
+        attributes = self.get_attributes()
 
         def check_running_cb(mother_vm_path, vmx_path, index):
             '''Iterate callback for checking if any vm is running'''
@@ -128,7 +129,7 @@ class Application(Gui):
         def iterate_cb(mother_vm_path, vmx_path, index):
             self.logger.log(f'Writing variables to {os.path.basename(vmx_path)}...')
             vmx = read_vmx(vmx_path)
-            vmx['guestinfo.server'] = os.environ['COMPUTERNAME']
+            vmx['guestinfo.server'] = attributes.server_name
             vmx['guestinfo.worker'] = index
             write_vmx(vmx_path, vmx)
 

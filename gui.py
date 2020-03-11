@@ -9,8 +9,8 @@ from builder import Builder
 from logger import TkinterLogger
 from pickler import load_state, save_state
 
-
 from namedtuples import Attributes
+from constants import DEFAULTS
 
 
 class Gui:
@@ -82,14 +82,8 @@ class Gui:
     def set_attributes(self, attributes=None):
         '''Sets the attributes for batch processing'''
         if not attributes:
-            self.builder.set_variable('starting_vm1', 1)
-            self.builder.set_variable('ending_vm1', 10)
-            self.builder.set_variable('starting_vm2', 11)
-            self.builder.set_variable('ending_vm2', 20)
-            self.builder.set_variable('guest_username', 'John')
-            self.builder.set_variable('guest_password', '1234')
-            self.builder.set_variable('start_vms_on_start_up', False)
-            self.builder.set_variable('start_vms_periodically', False)
+            for key, value in DEFAULTS.items():
+                self.builder.set_variable(key, value)
             self.set_vms()
             self.set_output_dir()
             attributes = self.get_attributes()

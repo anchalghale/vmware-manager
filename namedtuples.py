@@ -13,6 +13,7 @@ Attributes = collections.namedtuple('Attributes', [
     'ending_vm2',
     'guest_username',
     'guest_password',
+    'server_name',
     'start_vms_on_start_up',
     'start_vms_periodically',
 ])
