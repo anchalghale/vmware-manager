@@ -36,7 +36,7 @@ class Gui:
 
     def on_closing(self):
         ''' Callback for on closing event '''
-        save_state('~/vmware-manager-state', self.get_attributes())
+        save_state('~/vmware-manager-state', self.get_attributes()._asdict())
         self.root.destroy()
 
     def get_attributes(self):
@@ -78,6 +78,14 @@ class Gui:
         output_dir = os.path.realpath(askdirectory(title=f'Select {label}'))
         self.builder.set_variable(label, output_dir)
 
+    def set_output_dir1(self):
+        '''Sets the output_dir attribute'''
+        self.set_output_dir('output_dir1')
+
+    def set_output_dir2(self):
+        '''Sets the output_dir attribute'''
+        self.set_output_dir('output_dir2')
+
     def set_output_dirs(self):
         '''Sets the output_dir attribute'''
         self.set_output_dir('output_dir1')
@@ -88,10 +96,8 @@ class Gui:
         if not attributes:
             for key, value in DEFAULTS.items():
                 self.builder.set_variable(key, value)
-            self.set_vms()
-            self.set_output_dirs()
             attributes = self.get_attributes()
             save_state('~/vmware-manager-state', attributes)
         else:
-            attributes = Attributes(**attributes._asdict())
+            attributes = Attributes(**attributes)
             self.update_gui(attributes)
