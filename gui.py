@@ -22,12 +22,11 @@ class Gui:
         builder.add_from_file('mainframe.ui')
         builder.get_object('main_frame', root)
         builder.connect_callbacks(self)
-        root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        root.protocol('WM_DELETE_WINDOW', self.on_closing)
         root.title('VMware Manager')
         root.wm_attributes("-topmost", 1)
         self.builder = Builder(builder)
         self.logger = TkinterLogger(builder)
-
         self.set_attributes(load_state('~/vmware-manager-state'))
 
     def update_gui(self, attributes):
@@ -37,7 +36,7 @@ class Gui:
 
     def on_closing(self):
         ''' Callback for on closing event '''
-        save_state('~/vmware-manager-state', self.get_attributes())
+        save_state('~/vmware-manager-state', self.get_attributes()._asdict())
         self.root.destroy()
 
     def get_attributes(self):
@@ -74,19 +73,31 @@ class Gui:
         self.set_vm('vpn', 1)
         self.set_vm('vpn', 2)
 
-    def set_output_dir(self):
+    def set_output_dir(self, label):
         '''Sets the output_dir attribute'''
-        output_dir = os.path.realpath(askdirectory(title='Select output directory for VMs'))
-        self.builder.set_variable('output_dir', output_dir)
+        output_dir = os.path.realpath(askdirectory(title=f'Select {label}'))
+        self.builder.set_variable(label, output_dir)
 
-    def set_attributes(self, attributes=None):
+    def set_output_dir1(self):
+        '''Sets the output_dir attribute'''
+        self.set_output_dir('output_dir1')
+
+    def set_output_dir2(self):
+        '''Sets the output_dir attribute'''
+        self.set_output_dir('output_dir2')
+
+    def set_output_dirs(self):
+        '''Sets the output_dir attribute'''
+        self.set_output_dir('output_dir1')
+        self.set_output_dir('output_dir2')
+
+    def set_attributes(self, attributes: Attributes = None):
         '''Sets the attributes for batch processing'''
         if not attributes:
             for key, value in DEFAULTS.items():
                 self.builder.set_variable(key, value)
-            self.set_vms()
-            self.set_output_dir()
             attributes = self.get_attributes()
             save_state('~/vmware-manager-state', attributes)
         else:
+            attributes = Attributes(**attributes)
             self.update_gui(attributes)

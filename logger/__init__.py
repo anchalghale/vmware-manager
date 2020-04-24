@@ -48,14 +48,20 @@ class TkinterLogger(Logger):
 
     def set_entry(self, name, value):
         ''' Sets value of entry component '''
-        if self.widget_exists(name):
-            self.builder.get_object(name).delete(0, tk.END)
-            self.builder.get_object(name).insert(0, str(value))
+        try:
+            if self.widget_exists(name):
+                self.builder.get_object(name).delete(0, tk.END)
+                self.builder.get_object(name).insert(0, str(value))
+        except RuntimeError:  # temporary fix
+            pass
 
     def write_line(self, name, value):
         ''' Writes a line to a textbox '''
-        self.builder.get_object(name).insert(tk.END, '>> ' + str(value) + '\n')
-        self.builder.get_object(name).see('end')
+        try:
+            self.builder.get_object(name).insert(tk.END, '>> ' + str(value) + '\n')
+            self.builder.get_object(name).see('end')
+        except RuntimeError:  # temporary fix
+            pass
 
     def log(self, message, console='console'):
         ''' Logs a message to the console including time '''

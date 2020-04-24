@@ -47,8 +47,8 @@ class Application(Gui):
             progress += 1
             self.builder.builder.get_object('progress')['value'] = progress * 100 // total
 
-        def task(mother_vm_path, i):
-            vmx_path = os.path.join(attributes.output_dir, f'worker{i}/worker{i}.vmx')
+        def task(directory, mother_vm_path, i):
+            vmx_path = os.path.join(directory, f'worker{i}/worker{i}.vmx')
             vmx_path = os.path.realpath(vmx_path)
             callback(mother_vm_path, vmx_path, i)
             update_progress()
@@ -73,9 +73,9 @@ class Application(Gui):
                 callback(attributes.vpn_vm2, attributes.vpn_vm2, None)
                 update_progress()
             for i in range(attributes.starting_vm1, attributes.ending_vm1+1):
-                task(attributes.mother_vm1, i)
+                task(attributes.output_dir1, attributes.mother_vm1, i)
             for i in range(attributes.starting_vm2, attributes.ending_vm2+1):
-                task(attributes.mother_vm2, i)
+                task(attributes.output_dir2, attributes.mother_vm2, i)
             self.builder.enable_all(self.root)
             return True
         except StopIterationException:
@@ -107,8 +107,10 @@ class Application(Gui):
             attributes = self.get_attributes()
             self.builder.disable_all(self.root)
             self.logger.log('Cleaning VMs...')
-            if os.path.exists(attributes.output_dir):
-                shutil.rmtree(attributes.output_dir, ignore_errors=True)
+            if os.path.exists(attributes.output_dir1):
+                shutil.rmtree(attributes.output_dir1, ignore_errors=True)
+            if os.path.exists(attributes.output_dir2):
+                shutil.rmtree(attributes.output_dir2, ignore_errors=True)
             self.builder.enable_all(self.root)
         threading.Thread(target=task, daemon=True).start()
 

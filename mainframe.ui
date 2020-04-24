@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface>
   <object class="tk.Frame" id="main_frame">
-    <property name="height">500</property>
+    <property name="height">570</property>
     <property name="width">900</property>
     <layout>
       <property name="column">0</property>
@@ -10,7 +10,7 @@
     </layout>
     <child>
       <object class="tk.LabelFrame" id="tasks">
-        <property name="height">300</property>
+        <property name="height">350</property>
         <property name="text" translatable="yes">Tasks</property>
         <property name="width">900</property>
         <layout>
@@ -254,8 +254,8 @@
               </object>
             </child>
             <child>
-              <object class="tk.Label" id="Output Directory">
-                <property name="text" translatable="yes">Output Directory</property>
+              <object class="tk.Label" id="Output Directory 1">
+                <property name="text" translatable="yes">Output Directory 1</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="propagate">True</property>
@@ -264,8 +264,8 @@
               </object>
             </child>
             <child>
-              <object class="tk.Entry" id="output_dir">
-                <property name="textvariable">string:output_dir</property>
+              <object class="tk.Entry" id="output_dir1">
+                <property name="textvariable">string:output_dir1</property>
                 <property name="width">50</property>
                 <layout>
                   <property name="column">0</property>
@@ -276,12 +276,44 @@
             </child>
             <child>
               <object class="tk.Button" id="browse_5">
-                <property name="command">set_output_dir</property>
+                <property name="command">set_output_dir1</property>
                 <property name="text" translatable="yes">Browse</property>
                 <layout>
                   <property name="column">1</property>
                   <property name="propagate">True</property>
                   <property name="row">9</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Label" id="Output Directory 2">
+                <property name="text" translatable="yes">Output Directory 2</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="browse_6">
+                <property name="command">set_output_dir2</property>
+                <property name="text" translatable="yes">Browse</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">11</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Entry" id="output_dir2">
+                <property name="textvariable">string:output_dir2</property>
+                <property name="width">50</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">11</property>
                 </layout>
               </object>
             </child>
@@ -466,7 +498,7 @@
     </child>
     <child>
       <object class="tk.LabelFrame" id="console_frame">
-        <property name="height">200</property>
+        <property name="height">250</property>
         <property name="text" translatable="yes">Console</property>
         <property name="width">900</property>
         <layout>

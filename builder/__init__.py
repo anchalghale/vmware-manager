@@ -84,7 +84,6 @@ class Builder:
         for item in widget.winfo_children():
             list_.append(item)
             self.get_all_children(item, list_)
-        # print(list_)
         return list_
 
     def disable_all(self, widget):
