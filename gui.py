@@ -93,11 +93,11 @@ class Gui:
 
     def set_attributes(self, attributes: Attributes = None):
         '''Sets the attributes for batch processing'''
-        if not attributes:
+        if attributes and isinstance(attributes, dict):
+            attributes = Attributes(**attributes)
+            self.update_gui(attributes)
+        else:
             for key, value in DEFAULTS.items():
                 self.builder.set_variable(key, value)
             attributes = self.get_attributes()
             save_state('~/vmware-manager-state', attributes)
-        else:
-            attributes = Attributes(**attributes)
-            self.update_gui(attributes)
